@@ -60,7 +60,7 @@ and Nessie configurations pending. These cases can be added as needed. High leve
 * Different number of files per snapshot.
 
 
-## Table Accessbility Checker
+## Table Accessibility Checker
 
 ##### Example table accessibility inspection using S3
 ```
