@@ -34,7 +34,7 @@ public class S3AccessibilityCheck extends AccessibilityCheck {
     }
 
     @Override
-    protected CheckResult check(String s3Url) throws URISyntaxException {
+    protected CheckResult check(String s3Url) {
         try {
             URI uri = new URI(s3Url);
             String bucketName = uri.getHost();
@@ -47,6 +47,8 @@ public class S3AccessibilityCheck extends AccessibilityCheck {
             } else {
                 return new CheckResult(Status.ERROR, e.getMessage());
             }
+        } catch (URISyntaxException e) {
+            return new CheckResult(Status.ERROR, e.getMessage());
         }
     }
 }

@@ -1,14 +1,16 @@
 package org.nessie.tools.analyzer;
 
 import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.nessie.tools.analyzer.s3.S3AccessibilityCheck;
 import org.projectnessie.client.api.NessieApiV2;
 import org.projectnessie.client.http.HttpClientBuilder;
 import org.projectnessie.error.NessieNotFoundException;
 import org.projectnessie.model.Content;
+import org.projectnessie.model.FetchOption;
 import org.projectnessie.model.IcebergTable;
+import org.projectnessie.model.Operation;
 import org.projectnessie.model.Reference;
 
 import picocli.CommandLine;
@@ -27,13 +29,19 @@ public abstract class AccessibilityCheck implements Runnable {
             description = {"Only print error statements; skipping the tables which are accessible."})
     protected boolean printOnlyErrors = false;
 
+    @CommandLine.Option(names = {"--check-heads-only"}, defaultValue = "true",
+            description = {"Only checks the latest table states on the branch heads. If set to false, the code will parse through all commits in the branch."})
+    protected boolean checkOnlyHeads = true;
+
     private NessieApiV2 nessieApi;
+
+    private Set<String> alreadyProcessedCommits = new HashSet<>();
 
     protected void setup() {
         setupNessieApi();
     }
 
-    protected abstract CheckResult check(String s3Url) throws URISyntaxException;
+    protected abstract CheckResult check(String s3Url);
 
     private void setupNessieApi() {
         this.nessieApi = HttpClientBuilder.builder().withUri(nessieUri).build(NessieApiV2.class);
@@ -47,6 +55,11 @@ public abstract class AccessibilityCheck implements Runnable {
 
     private void checkTables(Reference branch) {
         try {
+            if (alreadyProcessedCommits.contains(branch.getHash())) {
+                // branch shares the commit with an already processed branch
+                return;
+            }
+
             nessieApi.getEntries().reference(branch).stream()
                     .parallel()
                     .filter(e -> Content.Type.ICEBERG_TABLE == e.getType())
@@ -57,13 +70,38 @@ public abstract class AccessibilityCheck implements Runnable {
                             CheckResult result = check(t.getMetadataLocation());
 
                             if (result.status != Status.SUCCESS || !printOnlyErrors) {
-                                System.out.printf("Table [%s@%s], Metadata [%s], Accessibility Status [%s]\n",
+                                System.out.printf("Table [%s @ BRANCH '%s'], Metadata [%s], Accessibility Status [%s]\n",
                                         String.join(".", e.getName().getElements()), branch.getName(),
                                         t.getMetadataLocation(), result.getStatus().name(), result.getMessage());
                             }
-                        } catch (NessieNotFoundException | URISyntaxException ex) {
+                            alreadyProcessedCommits.add(branch.getHash());
+                        } catch (NessieNotFoundException ex) {
                             throw new RuntimeException(ex);
                         }
+                    });
+
+            if (checkOnlyHeads) {
+                return;
+            }
+
+            // Check complete commit log
+            nessieApi.getCommitLog().reference(branch).fetch(FetchOption.ALL).stream()
+                    .filter(l -> !alreadyProcessedCommits.contains(l.getCommitMeta().getHash()))
+                    .forEach(l -> {
+                        if (l.getOperations() == null) {
+                            return;
+                        }
+                        l.getOperations().stream().filter(o -> o != null && o instanceof Operation.Put).map(o -> (Operation.Put) o)
+                                .filter(o -> o.getContent() != null && o.getContent() instanceof IcebergTable).forEach(o -> {
+                                    String metaLocation = ((IcebergTable) o.getContent()).getMetadataLocation();
+                                    CheckResult result = check(metaLocation);
+                                    if (result.status != Status.SUCCESS || !printOnlyErrors) {
+                                        System.out.printf("Table [%s @ COMMIT '%s'], Metadata [%s], Accessibility Status [%s]\n",
+                                                String.join(".", o.getKey().getElements()), l.getCommitMeta().getHash(),
+                                                metaLocation, result.getStatus().name(), result.getMessage());
+                                    }
+                                });
+                        alreadyProcessedCommits.add(l.getCommitMeta().getHash());
                     });
         } catch (NessieNotFoundException e) {
             throw new RuntimeException(e);

@@ -64,16 +64,14 @@ and Nessie configurations pending. These cases can be added as needed. High leve
 
 ##### Example table accessibility inspection using S3
 ```
-java -jar target/nessie-dev-tools-1.0-SNAPSHOT-jar-with-dependencies.jar check-accessibility s3 --aws-access-key=AKIAIOSFODNN7EXAMPLE --aws-secret-key=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY 
+java -jar target/nessie-dev-tools-1.0-SNAPSHOT-jar-with-dependencies.jar check-accessibility s3 --aws-access-key=AKIAIOSFODNN7EXAMPLE --aws-secret-key=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY --check-heads-only=true --errors-only=true
 ```
 ```
-Table [accesspath1.b1accesspath1@b1], Metadata [s3://bucketpath-b1/accesspath1/b1accesspath1/metadata/00001-9822836d-e92a-484f-b03f-02b67bf97223.metadata.json], Accessibility Status [ACCESS_DENIED]
-Table [accesspath2.b1accesspath2@b1], Metadata [s3://bucketpath-b1/accesspath2/b1accesspath2/metadata/00005-0352015c-8673-4173-be59-c4f8847ec785.metadata.json], Accessibility Status [ACCESS_DENIED]
-Table [b2@b1], Metadata [s3://bucketpath-b2/b2/metadata/00003-9df7ffba-4757-4758-aa5f-3103675135e1.metadata.json], Accessibility Status [ACCESS_DENIED]
-Table [user1t1@b1], Metadata [s3://eng.data.com/n1/bulk/user1t1/metadata/00003-d63c230b-9a6e-4ffa-bf0a-ff80354c7599.metadata.json], Accessibility Status [SUCCESS]
-Table [user1t2@b1], Metadata [s3://eng.data.com/n1/bulk/user1t2/metadata/00003-9b7e71e0-38ea-435f-9e97-3a6bf1c39ede.metadata.json], Accessibility Status [NOT_FOUND]
-Table [accesspath1.b1accesspath1@main], Metadata [s3://bucketpath-b1/accesspath1/b1accesspath1/metadata/00001-9822836d-e92a-484f-b03f-02b67bf97223.metadata.json], Accessibility Status [ACCESS_DENIED]
-Table [accesspath2.b1accesspath2@main], Metadata [s3://bucketpath-b1/accesspath2/b1accesspath2/metadata/00005-0352015c-8673-4173-be59-c4f8847ec785.metadata.json], Accessibility Status [ACCESS_DENIED]
-Table [b2@main], Metadata [s3://bucketpath-b2/b2/metadata/00003-9df7ffba-4757-4758-aa5f-3103675135e1.metadata.json], Accessibility Status [ACCESS_DENIED]
-Table [user1t1@main], Metadata [s3://eng.data.com/n1/bulk/user1t1/metadata/00003-d63c230b-9a6e-4ffa-bf0a-ff80354c7599.metadata.json], Accessibility Status [SUCCESS]
+Table [accesspath1.b1accesspath1 @ BRANCH 'b1'], Metadata [s3://bucketpath-b1/accesspath1/b1accesspath1/metadata/00001-9822836d-e92a-484f-b03f-02b67bf97223.metadata.json], Accessibility Status [ACCESS_DENIED]
+Table [accesspath2.b1accesspath2 @ BRANCH 'b1'], Metadata [s3://bucketpath-b1/accesspath2/b1accesspath2/metadata/00005-0352015c-8673-4173-be59-c4f8847ec785.metadata.json], Accessibility Status [ACCESS_DENIED]
+Table [b2 @ BRANCH 'b1'], Metadata [s3://bucketpath-b2/b2/metadata/00003-9df7ffba-4757-4758-aa5f-3103675135e1.metadata.json], Accessibility Status [ACCESS_DENIED]
+Table [user1t2 @ BRANCH 'b1'], Metadata [s3://eng.data.com/n1/bulk/user1t2/metadata/00003-9b7e71e0-38ea-435f-9e97-3a6bf1c39ede.metadata.json], Accessibility Status [NOT_FOUND]
+Table [accesspath1.b1accesspath1 @ BRANCH 'main'], Metadata [s3://bucketpath-b1/accesspath1/b1accesspath1/metadata/00001-9822836d-e92a-484f-b03f-02b67bf97223.metadata.json], Accessibility Status [ACCESS_DENIED]
+Table [accesspath2.b1accesspath2 @ BRANCH 'main'], Metadata [s3://bucketpath-b1/accesspath2/b1accesspath2/metadata/00005-0352015c-8673-4173-be59-c4f8847ec785.metadata.json], Accessibility Status [ACCESS_DENIED]
+Table [b2 @ BRANCH 'main'], Metadata [s3://bucketpath-b2/b2/metadata/00003-9df7ffba-4757-4758-aa5f-3103675135e1.metadata.json], Accessibility Status [ACCESS_DENIED]
 ```
