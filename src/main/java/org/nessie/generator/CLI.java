@@ -5,7 +5,7 @@ import org.nessie.generator.s3.S3ContentGenerator;
 
 import picocli.CommandLine;
 
-@CommandLine.Command(name = "iceberg-catalog-migrator", mixinStandardHelpOptions = true,
+@CommandLine.Command(name = "iceberg-content-generator", mixinStandardHelpOptions = true,
         subcommands = {S3ContentGenerator.class, LocalContentGenerator.class}, showDefaultValues = true)
 public class CLI {
     public static void main(String args[]) {
