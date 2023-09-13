@@ -1,4 +1,6 @@
-# Nessie Iceberg Table Generator
+# Nessie Iceberg Dev Tools
+
+## Nessie Iceberg Table Generator
 
 It's a quick and dirty utility to generate test Iceberg tables on the Nessie catalog. The build creates a fat jar in the target directory for easy use.
 
@@ -14,6 +16,7 @@ Commands:
   check-accessibility  Runs through the catalog and checks if the tables are accessible. Identifies the absent or denied access metadata.```
 
 #### Example table generation using S3 based warehouse location
+```
 ```
 java -jar target/nessie-dev-tools-1.0-SNAPSHOT-jar-with-dependencies.jar generate-tables s3 --nessie-uri=http://localhost:19120/api/v2 --warehouse=s3://harshm-test/nessie --tables-count=10 --snapshots-count=2 --aws-access-key=AKIAIOSFODNN7EXAMPLE  --aws-secret-key=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 ```
@@ -55,6 +58,9 @@ and Nessie configurations pending. These cases can be added as needed. High leve
 * Many remote IOs - Azure, GCS etc.
 * Evolved schemas, partitions, sort order, delete files, table properties.
 * Different number of files per snapshot.
+
+
+## Table Accessbility Checker
 
 ##### Example table accessibility inspection using S3
 ```
