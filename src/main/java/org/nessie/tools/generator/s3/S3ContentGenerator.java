@@ -1,10 +1,10 @@
-package org.nessie.generator.s3;
+package org.nessie.tools.generator.s3;
 
 import java.io.File;
 
 import org.apache.iceberg.aws.s3.S3FileIO;
 import org.apache.iceberg.io.FileIO;
-import org.nessie.generator.ContentGenerator;
+import org.nessie.tools.generator.ContentGenerator;
 
 import com.amazonaws.services.s3.AmazonS3URI;
 

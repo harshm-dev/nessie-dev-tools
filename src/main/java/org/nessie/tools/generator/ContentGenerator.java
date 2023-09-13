@@ -1,4 +1,4 @@
-package org.nessie.generator;
+package org.nessie.tools.generator;
 
 import static org.apache.iceberg.TableProperties.COMMIT_NUM_RETRIES;
 import static org.apache.iceberg.TableProperties.GC_ENABLED;

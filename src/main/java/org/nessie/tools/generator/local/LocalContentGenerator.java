@@ -1,4 +1,4 @@
-package org.nessie.generator.local;
+package org.nessie.tools.generator.local;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import org.apache.commons.io.FileUtils;
 import org.apache.iceberg.hadoop.HadoopFileIO;
 import org.apache.iceberg.io.FileIO;
-import org.nessie.generator.ContentGenerator;
+import org.nessie.tools.generator.ContentGenerator;
 import org.apache.hadoop.conf.Configuration;
 
 import picocli.CommandLine;

@@ -4,19 +4,18 @@ It's a quick and dirty utility to generate test Iceberg tables on the Nessie cat
 
 Once the jar is launched, choose the supported filesystem.
 ```
-java -jar target/nessie-iceberg-content-generator-1.0-SNAPSHOT.jar 
+java -jar target/nessie-dev-tools-1.0-SNAPSHOT-jar-with-dependencies.jar 
 Missing required subcommand
-Usage: iceberg-catalog-migrator [-hV] [COMMAND]
+Usage: nessie-dev-tools [-hV] [COMMAND]
   -h, --help      Show this help message and exit.
   -V, --version   Print version information and exit.
 Commands:
-  s3     Generate the tables using S3 as the filesystem store for Iceberg metadata and data files
-  local  Generate the tables using the local path as warehouse for Iceberg metadata and data files
-```
+  generate-tables  Generates test tables on the catalog
+  check-accessibility  Runs through the catalog and checks if the tables are accessible. Identifies the absent or denied access metadata.```
 
-#### Example run using S3 based warehouse location
+#### Example table generation using S3 based warehouse location
 ```
-java -jar nessie-iceberg-content-generator-1.0-SNAPSHOT.jar s3 --nessie-uri=http://localhost:19120/api/v2 --warehouse=s3://harshm-test/nessie --tables-count=10 --snapshots-count=2 --aws-access-key=AKIAIOSFODNN7EXAMPLE  --aws-secret-key=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+java -jar target/nessie-dev-tools-1.0-SNAPSHOT-jar-with-dependencies.jar generate-tables s3 --nessie-uri=http://localhost:19120/api/v2 --warehouse=s3://harshm-test/nessie --tables-count=10 --snapshots-count=2 --aws-access-key=AKIAIOSFODNN7EXAMPLE  --aws-secret-key=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 ```
 
 ```
@@ -29,9 +28,9 @@ Remaining: 0
 Time taken: 13 seconds
 ```
 
-#### Example run using local warehouse location (without optionals)
+#### Example table generation using local warehouse location (without optionals)
 ```
-java -jar target/nessie-iceberg-content-generator-1.0-SNAPSHOT.jar local --warehouse=/tmp/warehouse
+java -jar target/nessie-dev-tools-1.0-SNAPSHOT-jar-with-dependencies.jar generate-tables local --warehouse=/tmp/warehouse
 ```
 ```
 Generated gentool.table8134@main
@@ -57,4 +56,18 @@ and Nessie configurations pending. These cases can be added as needed. High leve
 * Evolved schemas, partitions, sort order, delete files, table properties.
 * Different number of files per snapshot.
 
-> **INFO**: It's possible to achieve these use-cases by tweaking the logic
+##### Example table accessibility inspection using S3
+```
+java -jar target/nessie-dev-tools-1.0-SNAPSHOT-jar-with-dependencies.jar check-accessibility s3 --aws-access-key=AKIAIOSFODNN7EXAMPLE --aws-secret-key=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY 
+```
+```
+Table [accesspath1.b1accesspath1@b1], Metadata [s3://bucketpath-b1/accesspath1/b1accesspath1/metadata/00001-9822836d-e92a-484f-b03f-02b67bf97223.metadata.json], Accessibility Status [ACCESS_DENIED]
+Table [accesspath2.b1accesspath2@b1], Metadata [s3://bucketpath-b1/accesspath2/b1accesspath2/metadata/00005-0352015c-8673-4173-be59-c4f8847ec785.metadata.json], Accessibility Status [ACCESS_DENIED]
+Table [b2@b1], Metadata [s3://bucketpath-b2/b2/metadata/00003-9df7ffba-4757-4758-aa5f-3103675135e1.metadata.json], Accessibility Status [ACCESS_DENIED]
+Table [user1t1@b1], Metadata [s3://eng.data.com/n1/bulk/user1t1/metadata/00003-d63c230b-9a6e-4ffa-bf0a-ff80354c7599.metadata.json], Accessibility Status [SUCCESS]
+Table [user1t2@b1], Metadata [s3://eng.data.com/n1/bulk/user1t2/metadata/00003-9b7e71e0-38ea-435f-9e97-3a6bf1c39ede.metadata.json], Accessibility Status [NOT_FOUND]
+Table [accesspath1.b1accesspath1@main], Metadata [s3://bucketpath-b1/accesspath1/b1accesspath1/metadata/00001-9822836d-e92a-484f-b03f-02b67bf97223.metadata.json], Accessibility Status [ACCESS_DENIED]
+Table [accesspath2.b1accesspath2@main], Metadata [s3://bucketpath-b1/accesspath2/b1accesspath2/metadata/00005-0352015c-8673-4173-be59-c4f8847ec785.metadata.json], Accessibility Status [ACCESS_DENIED]
+Table [b2@main], Metadata [s3://bucketpath-b2/b2/metadata/00003-9df7ffba-4757-4758-aa5f-3103675135e1.metadata.json], Accessibility Status [ACCESS_DENIED]
+Table [user1t1@main], Metadata [s3://eng.data.com/n1/bulk/user1t1/metadata/00003-d63c230b-9a6e-4ffa-bf0a-ff80354c7599.metadata.json], Accessibility Status [SUCCESS]
+```
